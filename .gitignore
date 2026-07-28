@@ -1,0 +1,89 @@
+# OSX / System
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+
+# Node / NPM / Yarn / PNPM
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store/
+lerna-debug.log*
+.npm/
+
+# Environment and Secret files
+.env*
+*.pem
+
+# IDEs & Editors
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.swp
+*.swo
+*~
+*.sublime-project
+*.sublime-workspace
+
+# Ruby / CocoaPods / Fastlane / Bundler
+.bundle/
+vendor/bundle/
+vendor/ruby/
+
+# React Native & Metro Caches
+.metro-health-check*
+.expo/
+.expo-shared/
+coverage/
+.nyc_output/
+
+# Build artifacts
+build/
+dist/
+*.jsbundle
+
+# Android build outputs & local config
+android/.gradle/
+android/app/build/
+android/build/
+android/local.properties
+android/captures/
+android/.cxx/
+android/.externalNativeBuild/
+
+# iOS build outputs & CocoaPods
+ios/Pods/
+ios/build/
+ios/DerivedData/
+ios/*.xcworkspace/xcuserdata/
+ios/*.xcodeproj/xcuserdata/
+ios/*.userstate
+ios/*.hmap
+ios/*.ipa
+ios/*.dSYM.zip
+ios/*.dSYM
+ios/.xcode.env.local
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output
+/node_modules/
+
+# Ignore local Climb Designer directory
+Climb Designer/
+.agents/
+
+# other
+server/
+

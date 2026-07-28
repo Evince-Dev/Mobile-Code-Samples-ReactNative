@@ -1,0 +1,70 @@
+diff --git a/node_modules/react-native/ReactCommon/hermes/executor/HermesExecutorFactory.cpp b/node_modules/react-native/ReactCommon/hermes/executor/HermesExecutorFactory.cpp
+index 1234567..89abcde 100644
+--- a/node_modules/react-native/ReactCommon/hermes/executor/HermesExecutorFactory.cpp
++++ b/node_modules/react-native/ReactCommon/hermes/executor/HermesExecutorFactory.cpp
+@@ -19,3 +19,20 @@
+ 
+ #if defined(HERMES_ENABLE_DEBUGGER) && !defined(HERMES_V1_ENABLED)
+ #include <hermes/inspector-modern/chrome/Registration.h>
+-#include <hermes/inspector/RuntimeAdapter.h>
+ #endif
+diff --git a/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.cpp b/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.cpp
+index 1234567..89abcde 100644
+--- a/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.cpp
++++ b/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.cpp
+@@ -11,3 +11,2 @@
+-#include <hermes/inspector/RuntimeAdapter.h>
+ #include <hermes/inspector/chrome/CDPHandler.h>
+diff --git a/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.h b/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.h
+index 1234567..89abcde 100644
+--- a/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.h
++++ b/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/ConnectionDemux.h
+@@ -19,3 +19,2 @@
+ #include <hermes/inspector-modern/chrome/Registration.h>
+-#include <hermes/inspector/RuntimeAdapter.h>
+ #include <hermes/inspector/chrome/CDPHandler.h>
+diff --git a/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.h b/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.h
+index 1234567..89abcde 100644
+--- a/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.h
++++ b/node_modules/react-native/ReactCommon/hermes/inspector-modern/chrome/Registration.h
+@@ -15,10 +15,22 @@
+ #include <hermes/hermes.h>
+-#include <hermes/inspector/RuntimeAdapter.h>
+ 
+-namespace facebook::hermes::inspector_modern::chrome {
++namespace facebook::hermes::inspector {
++
++class RuntimeAdapter {
++ public:
++  virtual ~RuntimeAdapter() = default;
++  virtual facebook::hermes::HermesRuntime &getRuntime() = 0;
++  virtual void tickleJs() = 0;
++};
++
++} // namespace facebook::hermes::inspector
++
++namespace facebook::hermes::inspector_modern::chrome {
++
++using facebook::hermes::inspector::RuntimeAdapter;
+ using DebugSessionToken = int;
+ 
+-extern DebugSessionToken enableDebugging(std::unique_ptr<RuntimeAdapter> adapter, const std::string &title);
+-extern void disableDebugging(DebugSessionToken session);
++inline DebugSessionToken enableDebugging(
++    std::unique_ptr<facebook::hermes::inspector::RuntimeAdapter> adapter,
++    const std::string &title) {
++  return -1;
++}
++
++inline void disableDebugging(DebugSessionToken session) {}
+diff --git a/node_modules/react-native/ReactCommon/react/runtime/hermes/HermesInstance.cpp b/node_modules/react-native/ReactCommon/react/runtime/hermes/HermesInstance.cpp
+index 1234567..89abcde 100644
+--- a/node_modules/react-native/ReactCommon/react/runtime/hermes/HermesInstance.cpp
++++ b/node_modules/react-native/ReactCommon/react/runtime/hermes/HermesInstance.cpp
+@@ -14,6 +14,2 @@
+ #ifdef HERMES_ENABLE_DEBUGGER
+ #include <hermes/inspector-modern/chrome/Registration.h>
+-
+-#ifndef HERMES_V1_ENABLED
+-#include <hermes/inspector/RuntimeAdapter.h>
+-#endif
