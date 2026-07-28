@@ -1,0 +1,24 @@
+# Android build artifacts
+.gradle/
+build/
+app/build/
+local.properties
+
+# Android Studio / IntelliJ
+.idea/
+*.iml
+.navigation/
+captures/
+
+# Native build outputs
+.externalNativeBuild/
+.cxx/
+
+# Key files / certificates
+*.keystore
+*.jks
+!debug.keystore
+
+# NDK
+obj/
+libs/
