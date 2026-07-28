@@ -1,0 +1,18 @@
+# CocoaPods
+Pods/
+
+# Xcode & Build outputs
+build/
+DerivedData/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.userstate
+*.hmap
+
+# Local Xcode Environment
+.xcode.env.local
+
+# Build artifacts & symbols
+*.ipa
+*.dSYM.zip
+*.dSYM
