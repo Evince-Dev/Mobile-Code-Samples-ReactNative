@@ -1,0 +1,99 @@
+diff --git a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.h b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.h
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.h
++++ b/node_modules/react-native-reanimated/Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy.h
+@@ -47,4 +47,4 @@ struct LayoutAnimationsProxy
+-    : public MountingOverrideDelegate,
+-      public UIManagerAnimationDelegate,
++    : public facebook::react::MountingOverrideDelegate,
++      public facebook::react::UIManagerAnimationDelegate,
+       public std::enable_shared_from_this<LayoutAnimationsProxy> {
+@@ -60,2 +60,2 @@ struct LayoutAnimationsProxy
+-  ContextContainer::Shared contextContainer_;
++  std::shared_ptr<const facebook::react::ContextContainer> contextContainer_;
+@@ -73,2 +73,2 @@ struct LayoutAnimationsProxy
+-      ContextContainer::Shared contextContainer,
++      std::shared_ptr<const facebook::react::ContextContainer> contextContainer,
+diff --git a/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.cpp b/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.cpp
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.cpp
++++ b/node_modules/react-native-reanimated/Common/cpp/worklets/WorkletRuntime/ReanimatedHermesRuntime.cpp
+@@ -19,3 +19,4 @@ namespace worklets {
+ #if HERMES_ENABLE_DEBUGGER
+-using namespace facebook::hermes::inspector_modern;
++using namespace facebook::hermes::inspector_modern::chrome;
++using RuntimeAdapter = facebook::hermes::inspector::RuntimeAdapter;
+ #endif // HERMES_ENABLE_DEBUGGER
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/LayoutReanimation/REASwizzledUIManager.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/LayoutReanimation/REASwizzledUIManager.mm
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/LayoutReanimation/REASwizzledUIManager.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/LayoutReanimation/REASwizzledUIManager.mm
+@@ -225,1 +225,1 @@
+-          rootView.intrinsicContentSize = contentSize;
++          [rootView setValue:[NSValue valueWithCGSize:contentSize] forKey:@"intrinsicContentSize"];
+diff --git a/node_modules/react-native-reanimated/apple/reanimated/apple/native/NativeMethods.mm b/node_modules/react-native-reanimated/apple/reanimated/apple/native/NativeMethods.mm
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/apple/reanimated/apple/native/NativeMethods.mm
++++ b/node_modules/react-native-reanimated/apple/reanimated/apple/native/NativeMethods.mm
+@@ -1,4 +1,28 @@
++#if __has_include(<React_Core/React/RCTEventDispatcher.h>)
++#import <React_Core/React/RCTEventDispatcher.h>
++#elif __has_include(<React/RCTEventDispatcher.h>)
+ #import <React/RCTEventDispatcher.h>
++#elif __has_include(<React-Core/RCTEventDispatcher.h>)
++#import <React-Core/RCTEventDispatcher.h>
++#endif
++
++#if __has_include(<React_Core/React/RCTScrollView.h>)
++#import <React_Core/React/RCTScrollView.h>
++#elif __has_include(<React/RCTScrollView.h>)
+ #import <React/RCTScrollView.h>
++#elif __has_include(<React-Core/RCTScrollView.h>)
++#import <React-Core/RCTScrollView.h>
++#endif
++
++#if __has_include("../REAUIKit.h")
++#import "../REAUIKit.h"
++#elif __has_include(<reanimated/apple/REAUIKit.h>)
+ #import <reanimated/apple/REAUIKit.h>
++#elif __has_include(<RNReanimated/REAUIKit.h>)
++#import <RNReanimated/REAUIKit.h>
++#endif
++
++#if __has_include("NativeMethods.h")
++#import "NativeMethods.h"
++#elif __has_include(<reanimated/apple/native/NativeMethods.h>)
+ #import <reanimated/apple/native/NativeMethods.h>
++#elif __has_include(<RNReanimated/NativeMethods.h>)
++#import <RNReanimated/NativeMethods.h>
++#endif
+diff --git a/node_modules/react-native-reanimated/src/platform-specific/findHostInstance.ts b/node_modules/react-native-reanimated/src/platform-specific/findHostInstance.ts
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/src/platform-specific/findHostInstance.ts
++++ b/node_modules/react-native-reanimated/src/platform-specific/findHostInstance.ts
+@@ -20,6 +20,12 @@ function findHostInstanceFastPath(
+-  if ('_nativeTag' in component && typeof component._nativeTag === 'number') {
+-    return component._nativeTag;
+-  }
++  if (
++    '__nativeTag' in component ||
++    '_nativeTag' in component ||
++    '__internalInstanceHandle' in component ||
++    '_internalInstanceHandle' in component ||
++    '__viewConfig' in component
++  ) {
++    return component;
++  }
+diff --git a/node_modules/react-native-reanimated/src/threads.ts b/node_modules/react-native-reanimated/src/threads.ts
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/src/threads.ts
++++ b/node_modules/react-native-reanimated/src/threads.ts
+@@ -85,1 +85,1 />
+-  if (__DEV__ && !SHOULD_BE_USE_WEB && _WORKLET) {
++  if (__DEV__ && !SHOULD_BE_USE_WEB && global._WORKLET) {
+@@ -169,1 +169,1 />
+-  if (__DEV__ && !SHOULD_BE_USE_WEB && _WORKLET) {
++  if (__DEV__ && !SHOULD_BE_USE_WEB && global._WORKLET) {
+@@ -231,1 +231,1 />
+-  if (SHOULD_BE_USE_WEB || !_WORKLET) {
++  if (SHOULD_BE_USE_WEB || !global._WORKLET) {

@@ -1,0 +1,90 @@
+import { baseApi } from './baseApi';
+import { API_ENDPOINTS } from '../../constants/apiEndpoints';
+import { StorageService } from '../../services/storageService';
+import { setCredentials } from '../slices/authSlice';
+
+
+/**
+ * Authentication API Types
+ */
+
+export interface LoginRequest {
+  email: string;
+  password?: string;
+  code?: string;
+}
+
+export interface UserAuthData {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
+}
+
+export interface LoginResponse {
+  token: string;
+  refreshToken?: string;
+  user: UserAuthData;
+  message?: string;
+}
+
+export interface AuthErrorResponse {
+  message: string;
+  statusCode?: number;
+  errors?: Record<string, string[]>;
+}
+
+/**
+ * Auth API Endpoints injected into RTK Query baseApi
+ */
+export const authApi = baseApi.injectEndpoints({
+  endpoints: (builder) => ({
+    /**
+     * Login endpoint mutation
+     * POST /auth/login
+     */
+    login: builder.mutation<LoginResponse, LoginRequest>({
+      query: (credentials) => ({
+        url: API_ENDPOINTS.AUTH.LOGIN,
+        method: 'POST',
+        body: credentials,
+      }),
+      invalidatesTags: ['Auth'],
+      async onQueryStarted(_credentials, { dispatch, queryFulfilled }) {
+        try {
+          const { data } = await queryFulfilled;
+          if (data?.token) {
+            await StorageService.saveSecureItem('auth_token', data.token);
+          }
+          if (data?.user) {
+            dispatch(setCredentials({ user: data.user }));
+          }
+        } catch (error) {
+          console.log('[authApi] Login query error:', error);
+        }
+      },
+    }),
+    /**
+     * Logout endpoint mutation
+     * POST /auth/logout
+     */
+    logout: builder.mutation<{ message: string }, void>({
+      query: () => ({
+        url: API_ENDPOINTS.AUTH.LOGOUT,
+        method: 'POST',
+      }),
+      invalidatesTags: ['Auth'],
+      async onQueryStarted(_args, { queryFulfilled }) {
+        try {
+          await queryFulfilled;
+          await StorageService.removeSecureItem('auth_token');
+        } catch (error) {
+          console.error('[authApi] Logout query error:', error);
+        }
+      },
+    }),
+  }),
+  overrideExisting: false,
+});
+
+export const { useLoginMutation, useLogoutMutation } = authApi;
