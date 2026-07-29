@@ -33,6 +33,10 @@ export * from './CreditCardIcon';
 export * from './SearchIcon';
 export * from './FilterIcon';
 export * from './ChevronDownIcon';
+export * from './ChevronUpIcon';
+
 export * from './CalendarIcon';
 export * from './PlusIcon';
 export * from './CheckIcon';
+export * from './WifiOffIcon';
+

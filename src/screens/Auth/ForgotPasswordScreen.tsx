@@ -99,6 +99,8 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
                   labelTx="auth.emailLabel"
                   placeholderTx="auth.emailPlaceholder"
                   keyboardType="email-address"
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit(onValidSubmit)}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}

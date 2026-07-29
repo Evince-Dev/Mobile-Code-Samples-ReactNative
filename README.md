@@ -10,10 +10,6 @@ A modern, high-performance React Native application built for iOS and Android, f
 RNSample/
 ├── android/                             # Android Native project & Gradle
 ├── ios/                                 # iOS Native project & CocoaPods
-├── server/                              # Local Mock Auth HTTP Server
-│   ├── index.js                         # HTTP server endpoints (/auth/login, /auth/logout, delay handling)
-│   ├── mockAuthServer.ts                # TypeScript mock server helper
-│   └── users.json                       # Static user records & API tokens
 ├── src/
 │   ├── assets/                          # Static images & graphics
 │   ├── components/
@@ -26,8 +22,8 @@ RNSample/
 │   │   └── apiEndpoints.ts              # Centralized Registry of API Endpoints
 │   ├── contexts/
 │   │   ├── AlertContext.tsx             # Global Alert Dialog & Snackbar Context System
+│   │   ├── NetworkContext.tsx           # Global Internet Checker Context System
 │   │   └── ThemeContext.tsx             # Dual Theme Manager (Light / Dark Mode via StorageService)
-│   ├── dummyData/                       # Mock Data Sources & User Models
 │   ├── locales/
 │   │   └── en.json                      # i18n English Translation Strings
 │   ├── navigation/                      # React Navigation Stack Setup & Custom Interpolators
@@ -35,7 +31,7 @@ RNSample/
 │   │   └── types.ts                     # Navigation Type Definitions
 │   ├── screens/
 │   │   ├── Auth/                        # Auth Screens (LoginScreen, LoginWithCodeScreen, ForgotPasswordScreen, LauncherScreen)
-│   │   └── Home/                        # Dashboard / Home Screen with 30s session timeout management
+│   │   └── Home/                        # Dashboard / Home Screen with session timeout management
 │   ├── services/
 │   │   ├── storageService.ts            # MMKV Key-Value & Keychain Encrypted Token Service
 │   │   └── index.ts                     # Storage Services Barrel Export
@@ -79,7 +75,6 @@ RNSample/
 | **react-hook-form & Zod** | Declarative form management with schema validation |
 | **react-native-svg** | Vector SVG Icons & Graphics |
 | **screenUtils** | Responsive scaling utility for font, width, height, and paddings |
-| **Node.js HTTP Server** | Lightweight mock backend (`server/index.js`) for authenticating against `users.json` |
 
 ---
 
@@ -93,6 +88,7 @@ To enforce design consistency and prevent layout bugs, screens **must never impo
 - **`AppButton` & `FormInputField`**: Standardized buttons and form text inputs supporting active focus border highlights (`2px primary`) and custom flex row responsiveness.
 - **`AppHeader` & `AppHeadingBlock`**: Standardized screen headers and section greeting blocks.
 - **`AppLoader`**: Centralized loading overlay featuring `AppActivityIndicator` and dynamic status text.
+- **`NoInternetView`**: Centralized no-internet overlay with retry button and connection checking.
 
 ### 2. Sizing & Scaling (`screenUtils`)
 All layout dimensions, paddings, margins, font sizes, and icon dimensions are scaled dynamically using `screenUtils`:
@@ -113,20 +109,6 @@ All layout dimensions, paddings, margins, font sizes, and icon dimensions are sc
 ### 5. Centralized Endpoints & Environment Config
 - **API Routes**: Centralized in `src/constants/apiEndpoints.ts` (`API_ENDPOINTS.AUTH.LOGIN`, `API_ENDPOINTS.AUTH.LOGOUT`, etc.).
 - **Environment Loader**: Centralized in `src/config/env.ts` (`ENV.API_BASE_URL`, `ENV.IS_DEV`) reading from `.env`, `.env.development`, and `.env.production`.
-
----
-
-## 🖥️ Local Mock Auth Server
-
-The application includes a local Node.js HTTP server (`server/index.js`) that validates user credentials against `server/users.json`:
-- **Strict Validation**: Only accepts registered users (`user@example.com` with password `Password123!`). Unmatched credentials return HTTP `400` with `'Invalid email or password.'`.
-- **Response Delays**: Simulates realistic network latency (1.5s delay) for `/auth/login` and `/auth/logout` endpoints.
-- **Token Delivery**: Returns the user's API token from `users.json`, which is persisted securely in hardware-backed keychain storage on the client app.
-
-Run the mock auth server:
-```bash
-npm run server
-```
 
 ---
 
@@ -164,22 +146,17 @@ cp .env.example .env
 
 ## 📱 Running the Application
 
-### 1. Start Mock Auth Server
-```bash
-npm run server
-```
-
-### 2. Start Metro Bundler
+### 1. Start Metro Bundler
 ```bash
 npm start
 ```
 
-### 3. Run on iOS Simulator
+### 2. Run on iOS Simulator
 ```bash
 npm run ios
 ```
 
-### 4. Run on Android Emulator
+### 3. Run on Android Emulator
 ```bash
 npm run android
 ```

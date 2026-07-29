@@ -26,7 +26,7 @@ import {
 import { useTheme } from '../../contexts/ThemeContext';
 import { screenUtils } from '../../utils/screenUtils';
 import { FONTS } from '../../utils/fontConstants';
-import { ArrowLeftIcon, MailIcon } from '../../components/icons';
+import { MailIcon } from '../../components/icons';
 import { useAppDispatch } from '../../store';
 import { setCredentials } from '../../store/slices/authSlice';
 
@@ -159,6 +159,8 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
                   labelTx="auth.emailLabel"
                   placeholderTx="auth.emailPlaceholder"
                   keyboardType="email-address"
+                  returnKeyType="done"
+                  onSubmitEditing={handleSubmit(onSendCode)}
                   value={value}
                   onChangeText={onChange}
                   onBlur={onBlur}

@@ -42,8 +42,8 @@ export const HomeScreen: React.FC = () => {
   const user = useAppSelector((state) => state.auth.user);
   const [logoutMutation] = useLogoutMutation();
 
-  const displayName = user?.name || 'Sample User';
-  const email = user?.email || 'user@example.com';
+  const displayName = user?.name || '';
+  const email = user?.email || '';
 
   /**
    * Executes the API logout request, clears secure storage tokens,
@@ -68,11 +68,11 @@ export const HomeScreen: React.FC = () => {
    */
   const handleLogoutClick = () => {
     showAlert({
-      title: t('common.logout') || 'Log Out',
-      message: t('common.logoutConfirmation') || 'Are you sure you want to log out?',
+      title: t('common.logout'),
+      message: t('common.logoutConfirmation'),
       type: 'warning',
-      confirmText: t('common.logout') || 'Log Out',
-      cancelText: t('common.cancel') || 'Cancel',
+      confirmText: t('common.logout'),
+      cancelText: t('common.cancel'),
       onConfirm: performLogout,
     });
   };
@@ -86,8 +86,8 @@ export const HomeScreen: React.FC = () => {
   React.useEffect(() => {
     const sessionTimer = setTimeout(() => {
       showAlert({
-        title: t('common.sessionTimeout') || 'Session Timeout',
-        message: t('common.sessionTimeoutMessage') || 'Your session has timed out after 5 minutes. Please sign in again.',
+        title: t('common.sessionTimeout'),
+        message: t('common.sessionTimeoutMessage'),
         type: 'warning',
         onConfirm: performLogout,
         onClose: performLogout,
@@ -131,7 +131,7 @@ export const HomeScreen: React.FC = () => {
 
           <AppView style={styles.infoRow}>
             <AppText variant="muted" style={styles.label}>
-              {t('common.nameLabel') || 'Name'}
+              {t('common.nameLabel')}
             </AppText>
             <AppText weight="semibold" style={styles.value}>
               {displayName}
@@ -177,7 +177,7 @@ export const HomeScreen: React.FC = () => {
       </AppView>
 
       {/* ── Common Loader ── */}
-      <AppLoader visible={isLogoutLoading} message={t('common.loggingOut') || 'Logging out...'} />
+      <AppLoader visible={isLogoutLoading} message={t('common.loggingOut')} />
     </BaseContainer>
   );
 };

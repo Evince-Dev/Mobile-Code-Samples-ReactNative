@@ -97,3 +97,59 @@ index 1234567..89abcde 100644
 @@ -231,1 +231,1 />
 -  if (SHOULD_BE_USE_WEB || !_WORKLET) {
 +  if (SHOULD_BE_USE_WEB || !global._WORKLET) {
+diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java
++++ b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/ReanimatedModule.java
+@@ -13,1 +13,0 @@
+-import com.facebook.react.uimanager.UIManagerModuleListener;
+@@ -21,1 +20,1 @@
+-    implements LifecycleEventListener, UIManagerModuleListener, UIManagerListener {
++    implements LifecycleEventListener, UIManagerListener {
+@@ -95,4 +94,1 //
+-      uiManager.addUIManagerListener(this);
+-      mUnsubscribe =
+-          Utils.combineRunnables(mUnsubscribe, () -> uiManager.removeUIManagerListener(this));
++      // Paper legacy UIManagerModule listener omitted for React Native 0.86+ compatibility
+@@ -123,1 +118,0 @@
+-  @Override
+diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReaLayoutAnimator.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReaLayoutAnimator.java
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReaLayoutAnimator.java
++++ b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReaLayoutAnimator.java
+@@ -13,7 +13,17 @@
+-import com.facebook.react.uimanager.layoutanimation.LayoutAnimationController;
+-import com.facebook.react.uimanager.layoutanimation.LayoutAnimationListener;
++class LayoutAnimationController {
++  public boolean shouldAnimateLayout(View viewToAnimate) { return false; }
++  public void reset() {}
++  public void applyLayoutUpdate(View view, int x, int y, int width, int height) {}
++  public void deleteView(View view, LayoutAnimationListener listener) {}
++}
++interface LayoutAnimationListener {
++  void onAnimationEnd();
++}
+ import com.swmansion.reanimated.ReanimatedModule;
+ import java.lang.ref.WeakReference;
+ import java.util.ArrayList;
+ 
+-class ReaLayoutAnimator extends LayoutAnimationController {
++public class ReaLayoutAnimator extends LayoutAnimationController {
+@@ -37,1 +47,1 @@
+-  ReaLayoutAnimator(
++  public ReaLayoutAnimator(
+diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedUIImplementation.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedUIImplementation.java
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedUIImplementation.java
++++ b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedUIImplementation.java
+@@ -45,1 +45,0 @@
+-            new ReanimatedNativeHierarchyManager(viewManagerRegistry, reactContext),
+diff --git a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java
+index 1234567..89abcde 100644
+--- a/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java
++++ b/node_modules/react-native-reanimated/android/src/main/java/com/swmansion/reanimated/layoutReanimation/ReanimatedUIManager.java
+@@ -25,1 +25,1 @@
+-    super.onBatchComplete();
++    // super.onBatchComplete(); omitted for RN 0.86+
+
+
