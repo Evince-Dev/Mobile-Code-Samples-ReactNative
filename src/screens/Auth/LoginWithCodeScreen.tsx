@@ -29,6 +29,7 @@ import { FONTS } from '../../utils/fontConstants';
 import { MailIcon } from '../../components/icons';
 import { useAppDispatch } from '../../store';
 import { setCredentials } from '../../store/slices/authSlice';
+import { StorageService } from '../../services/storageService';
 
 type Props = StackScreenProps<RootStackParamList, 'LoginWithCode'>;
 
@@ -88,15 +89,14 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
     }
 
     setIsVerifying(false);
-    dispatch(
-      setCredentials({
-        user: {
-          id: 'usr_101',
-          name: submittedEmail.split('@')[0],
-          email: submittedEmail,
-        },
-      })
-    );
+    const user = {
+      id: 'usr_101',
+      name: submittedEmail.split('@')[0],
+      email: submittedEmail,
+    };
+    await StorageService.saveSecureItem('auth_token', 'code_mock_token');
+    StorageService.setObject('auth_user', user);
+    dispatch(setCredentials({ user }));
     navigation.replace('App');
   };
 

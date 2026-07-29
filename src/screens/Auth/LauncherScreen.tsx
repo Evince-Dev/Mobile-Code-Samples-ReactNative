@@ -6,12 +6,17 @@ import { RootStackParamList } from '../../navigation/types';
 import { useTheme } from '../../contexts/ThemeContext';
 import { screenUtils } from '../../utils/screenUtils';
 import { FONTS } from '../../utils/fontConstants';
+import { useAppDispatch } from '../../store';
+import { setCredentials } from '../../store/slices/authSlice';
+import { StorageService } from '../../services/storageService';
+import { UserAuthData } from '../../store/api/authApi';
 
 type Props = StackScreenProps<RootStackParamList, 'Launcher'>;
 
 export const LauncherScreen: React.FC<Props> = ({ navigation }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const dispatch = useAppDispatch();
 
   // Animations
   const logoOpacity = useRef(new Animated.Value(0)).current;
@@ -49,9 +54,32 @@ export const LauncherScreen: React.FC<Props> = ({ navigation }) => {
       ]).start();
     });
 
-    // Navigate to Login after 2.2s
+    const checkAuthAndNavigate = async () => {
+      try {
+        const token = await StorageService.getSecureItem('auth_token');
+        const user = StorageService.getObject<UserAuthData>('auth_user');
+        console.log('token:', token);
+        console.log('user:', user);
+
+        if (token) {
+          dispatch(
+            setCredentials({
+              user: user || { id: 'usr_101', name: 'User', email: 'user@example.com' },
+            })
+          );
+          navigation.replace('App');
+        } else {
+          navigation.replace('Login');
+        }
+      } catch (error) {
+        console.error('[LauncherScreen] Error checking auth status:', error);
+        navigation.replace('Login');
+      }
+    };
+
+    // Check auth and navigate after splash animation (2.2s)
     const timer = setTimeout(() => {
-      navigation.replace('Login');
+      checkAuthAndNavigate();
     }, 2200);
 
     return () => clearTimeout(timer);

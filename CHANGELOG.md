@@ -4,6 +4,21 @@ All notable changes to this project are documented in this file.
 
 ## [Unreleased] - 2026-07-29
 
+### 🔐 Authentication & Session Persistence
+- **Persistent Auth Session (`LauncherScreen.tsx`)**:
+  - Implemented automatic auth session restoration on app boot after splash animation.
+  - Checks for persisted `auth_token` (Keychain) and `auth_user` (MMKV) on launch and auto-navigates directly to the Home screen (`App`) when logged in.
+- **Local Storage Management (`authApi.ts`)**:
+  - Updated RTK Query `login` mutation lifecycle to store `auth_user` details in MMKV alongside secure Keychain token storage.
+  - Updated `logout` mutation to clear `auth_user` and `auth_token` from local storage.
+- **OTP Code Sign-In Persistence (`LoginWithCodeScreen.tsx`)**:
+  - Added secure token and user data persistence upon OTP code verification.
+- **Google Sign-In & Error Handling (`LoginScreen.tsx`)**:
+  - Refactored `GoogleButton` onPress and `onValidSubmit` handlers to handle `isGoogleLoading` state properly.
+  - Ensures full-screen `<AppLoader>` unmounts before presenting error alert dialogs, preventing overlay screen freezes on failed login attempts.
+- **Watchman Directory Ignores (`.watchmanconfig`)**:
+  - Configured directory ignore patterns (`android/build`, `ios/Pods`, `.git`, `.idea`) for Watchman file watching optimization.
+
 ### 🚀 Added
 - **Keyboard Navigation Accessory (`KeyboardAccessoryToolbar.tsx`)**:
   - Implemented WurkNow-style self-contained `InputAccessoryView` and automatic route input registry (`registerInput`, `getFocusableInputs`).

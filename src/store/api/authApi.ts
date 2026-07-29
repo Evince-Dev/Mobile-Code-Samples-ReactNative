@@ -57,6 +57,7 @@ export const authApi = baseApi.injectEndpoints({
             await StorageService.saveSecureItem('auth_token', data.token);
           }
           if (data?.user) {
+            StorageService.setObject('auth_user', data.user);
             dispatch(setCredentials({ user: data.user }));
           }
         } catch (error) {
@@ -78,6 +79,7 @@ export const authApi = baseApi.injectEndpoints({
         try {
           await queryFulfilled;
           await StorageService.removeSecureItem('auth_token');
+          StorageService.removeItem('auth_user');
         } catch (error) {
           console.error('[authApi] Logout query error:', error);
         }
