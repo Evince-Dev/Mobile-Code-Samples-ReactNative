@@ -15,20 +15,21 @@ import {
   AppTouchableOpacity,
   AppHeadingBlock,
 } from '../../components/base';
-import { FormInputField, AuthTopBar, AuthFooter, GoogleButton, AppLoader } from '../../components/common';
-import usersData from '../../../server/users.json';
+import {
+  FormInputField,
+  AuthTopBar,
+  AuthFooter,
+  GoogleButton,
+  AppLoader,
+} from '../../components/common';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useAlert } from '../../contexts/AlertContext';
 import { screenUtils } from '../../utils/screenUtils';
-import { FONT_WEIGHTS, FONTS } from '../../utils/fontConstants';
-import {
-  GoogleIcon,
-  ChevronRightIcon,
-} from '../../components/icons';
+import { FONTS } from '../../utils/fontConstants';
+import { ChevronRightIcon } from '../../components/icons';
 import { useAppDispatch, useLoginMutation } from '../../store';
 import { setCredentials } from '../../store/slices/authSlice';
 import { StorageService } from '../../services/storageService';
-import { typography } from '../../theme';
 
 type Props = StackScreenProps<RootStackParamList, 'Login'>;
 
@@ -68,8 +69,6 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
     },
   });
 
-
-
   const [loginMutation, { isLoading: isLoginLoading }] = useLoginMutation();
 
   /**
@@ -87,11 +86,10 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
         error?.data?.error ||
         error?.error ||
         error?.message ||
-        t('auth.invalidCredentials') ||
-        'Invalid email or password.';
+        t('auth.invalidCredentials');
 
       showAlert({
-        title: t('common.error') || 'Error',
+        title: t('common.error'),
         message: apiErrorMessage,
         type: 'error',
       });
@@ -119,27 +117,11 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       {/* ── Continue with Google ── */}
       <GoogleButton
         onPress={() => {
+          //Test google signInWith
           setIsGoogleLoading(true);
+          onValidSubmit({ email: 'user@example.com', password: 'Password123!' });
           setTimeout(() => {
-            const enteredEmail = watch('email')?.trim();
-            const targetEmail = enteredEmail || 'user@example.com';
-            const matchedUser = usersData.users.find(
-              (u) => u.email.toLowerCase() === targetEmail.toLowerCase()
-            );
-
             setIsGoogleLoading(false);
-            if (matchedUser) {
-              const userToken = matchedUser.token || 'bearer_token_user_example_101';
-              StorageService.saveSecureItem('auth_token', userToken);
-              dispatch(setCredentials({ user: matchedUser.user }));
-              navigation.replace('App');
-            } else {
-              showAlert({
-                title: t('common.error') || 'Error',
-                message: t('auth.userMismatchError', { email: targetEmail }) || `User '${targetEmail}' does not match record in users.json.`,
-                type: 'error',
-              });
-            }
           }, 1200);
         }}
       />
@@ -163,6 +145,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
               labelTx="auth.emailLabel"
               placeholderTx="auth.emailPlaceholder"
               keyboardType="email-address"
+              returnKeyType="next"
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -180,6 +163,8 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
               placeholderTx="auth.passwordPlaceholder"
               secureTextEntry
               showPasswordToggle
+              returnKeyType="done"
+              onSubmitEditing={handleSubmit(onValidSubmit)}
               value={value}
               onChangeText={onChange}
               onBlur={onBlur}
@@ -238,7 +223,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       <AuthFooter />
 
       {/* ── Common Loader ── */}
-      <AppLoader visible={isGoogleLoading} message={t('common.loggingIn') || 'Signing in...'} />
+      <AppLoader visible={isGoogleLoading} message={t('common.loggingIn')} />
     </BaseContainer>
   );
 };

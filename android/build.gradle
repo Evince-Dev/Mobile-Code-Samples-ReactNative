@@ -1,12 +1,4 @@
 buildscript {
-    ext {
-        buildToolsVersion = "36.0.0"
-        minSdkVersion = 24
-        compileSdkVersion = 36
-        targetSdkVersion = 36
-        ndkVersion = "27.1.12297006"
-        kotlinVersion = "2.1.20"
-    }
     repositories {
         google()
         mavenCentral()
@@ -15,6 +7,29 @@ buildscript {
         classpath("com.android.tools.build:gradle")
         classpath("com.facebook.react:react-native-gradle-plugin")
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+    }
+}
+
+// Top-level ext block
+allprojects {
+    ext {
+        buildToolsVersion = "36.0.0"
+        minSdkVersion = 24
+        compileSdkVersion = 36
+        targetSdkVersion = 36
+        ndkVersion = "27.1.12297006"
+        kotlinVersion = "2.1.20"
+        
+        // Read node executable from local.properties if available
+        def localProps = new Properties()
+        def localPropsFile = rootProject.file('local.properties')
+        if (localPropsFile.exists()) {
+            localPropsFile.withInputStream { localProps.load(it) }
+        }
+        NODE_EXECUTABLE = localProps.getProperty('node.executable') ?: "node"
+        
+        // Prevent libraries from calling 'node' to resolve paths
+        REACT_NATIVE_NODE_MODULES_DIR = file("${rootProject.projectDir}/../node_modules/react-native").absolutePath
     }
 }
 

@@ -24,7 +24,11 @@
     "success": "Success",
     "warning": "Warning",
     "info": "Information",
-    "nameLabel": "Name"
+    "nameLabel": "Name",
+    "noInternetTitle": "No Internet Connection",
+    "noInternetMessage": "Please check your network settings and try again.",
+    "retry": "Try Again",
+    "connectionRestored": "Internet connection restored."
   },
   "dashboard": {
     "headerTitle": "RN Sample",
@@ -62,7 +66,7 @@
     "passwordRequired": "Password is required",
     "passwordMinLength": "Password must be at least 6 characters",
     "invalidCredentials": "Invalid email or password.",
-    "userMismatchError": "User '{{email}}' does not match record in users.json.",
+    "userMismatchError": "Invalid credentials.",
     "resetPasswordTitle": "Reset password",
     "resetPasswordSubtitle": "Enter your email and we'll send a reset link.",
     "sendResetLink": "Send reset link",

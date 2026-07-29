@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { StorageService } from '../services/storageService';
 import { ColorPalette, lightColors, darkColors } from '../theme/colors';
+import { AppStatusBar } from '../components/base/AppStatusBar';
 
 export type ThemeMode = 'light' | 'dark';
 
@@ -66,6 +67,7 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children, initialT
 
   return (
     <ThemeContext.Provider value={{ theme, isDark, colors, toggleTheme, setTheme }}>
+      <AppStatusBar />
       {children}
     </ThemeContext.Provider>
   );

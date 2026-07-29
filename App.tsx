@@ -11,9 +11,11 @@ LogBox.ignoreAllLogs();
 // Import i18n initialization
 import './src/utils/i18n';
 
-// Import Theme & Alert Context & Root Navigator
+// Import Theme, Alert & Network Context & Root Navigator
 import { ThemeProvider } from './src/contexts/ThemeContext';
 import { AlertProvider } from './src/contexts/AlertContext';
+import { NetworkProvider } from './src/contexts/NetworkContext';
+import { NoInternetView } from './src/components/common/NoInternetView';
 import { RootNavigator } from './src/navigation/RootNavigator';
 
 export default function App() {
@@ -21,11 +23,14 @@ export default function App() {
     <Provider store={store}>
       <SafeAreaProvider>
         <ThemeProvider>
-          <AlertProvider>
-            <NavigationContainer>
-              <RootNavigator />
-            </NavigationContainer>
-          </AlertProvider>
+          <NetworkProvider>
+            <AlertProvider>
+              <NavigationContainer>
+                <RootNavigator />
+                <NoInternetView />
+              </NavigationContainer>
+            </AlertProvider>
+          </NetworkProvider>
         </ThemeProvider>
       </SafeAreaProvider>
     </Provider>

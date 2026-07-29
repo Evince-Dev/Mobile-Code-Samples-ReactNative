@@ -14,3 +14,5 @@ export * from './AppActivityIndicator';
 export * from './AppSwitch';
 export * from './BaseContainer';
 export * from './AppHeadingBlock';
+export * from './AppStatusBar';
+

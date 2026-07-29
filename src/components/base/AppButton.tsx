@@ -205,6 +205,7 @@ export const AppButton: React.FC<AppButtonProps> = ({
           children
         ) : (
           <AppText
+            align="center"
             style={[styles.text, getTextSizeStyle(), { color: textColor }, textStyle]}
           >
             {content}
@@ -230,5 +231,6 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: FONTS.GEIST_MEDIUM,
     fontSize: screenUtils.scaleFont(14),
+    textAlign: 'center',
   },
 });
