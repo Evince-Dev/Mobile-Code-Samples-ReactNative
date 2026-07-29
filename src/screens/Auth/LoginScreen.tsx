@@ -75,12 +75,14 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
    * Handles Form Submission
    * Triggers the RTK Query login mutation and handles invalid credentials via AlertContext.
    */
-  const onValidSubmit = async (data: LoginFormValues) => {
+  const onValidSubmit = async (data: LoginFormValues, isGoogle: boolean = false) => {
     try {
+      isGoogle ? setIsGoogleLoading(true) : null;
       await loginMutation({ email: data.email, password: data.password }).unwrap();
       navigation.replace('App');
     } catch (error: any) {
       console.log('Login error:', error);
+      isGoogle ? setIsGoogleLoading(false) : null;
       const apiErrorMessage =
         error?.data?.message ||
         error?.data?.error ||
@@ -93,6 +95,8 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
         message: apiErrorMessage,
         type: 'error',
       });
+    } finally {
+      isGoogle ? setIsGoogleLoading(false) : null;
     }
   };
 
@@ -117,12 +121,7 @@ export const LoginScreen: React.FC<Props> = ({ navigation }) => {
       {/* ── Continue with Google ── */}
       <GoogleButton
         onPress={() => {
-          //Test google signInWith
-          setIsGoogleLoading(true);
-          onValidSubmit({ email: 'user@example.com', password: 'Password123!' });
-          setTimeout(() => {
-            setIsGoogleLoading(false);
-          }, 1200);
+          onValidSubmit({ email: 'user@example.com', password: 'Password123!' }, true);
         }}
       />
 
