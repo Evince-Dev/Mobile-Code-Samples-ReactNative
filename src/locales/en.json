@@ -43,6 +43,7 @@
   "auth": {
     "login": "Log In",
     "signUp": "Sign Up",
+    "tagline": "AUTH & LOGIN SAMPLE",
     "welcomeBack": "Welcome back",
     "signInSubtitle": "Sign in to your RN Sample account",
     "continueWithGoogle": "Continue with Google",

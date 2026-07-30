@@ -17,6 +17,7 @@ import { AlertProvider } from './src/contexts/AlertContext';
 import { NetworkProvider } from './src/contexts/NetworkContext';
 import { NoInternetView } from './src/components/common/NoInternetView';
 import { RootNavigator } from './src/navigation/RootNavigator';
+import { navigationRef } from './src/services/navigationService';
 
 export default function App() {
   return (
@@ -25,7 +26,7 @@ export default function App() {
         <ThemeProvider>
           <NetworkProvider>
             <AlertProvider>
-              <NavigationContainer>
+              <NavigationContainer ref={navigationRef}>
                 <RootNavigator />
                 <NoInternetView />
               </NavigationContainer>

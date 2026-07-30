@@ -2,11 +2,13 @@ import React from 'react';
 import { Easing } from 'react-native';
 import { createStackNavigator, StackCardInterpolationProps } from '@react-navigation/stack';
 import { RootStackParamList } from './types';
-import { LauncherScreen } from '../screens/Auth/LauncherScreen';
-import { LoginScreen } from '../screens/Auth/LoginScreen';
-import { ForgotPasswordScreen } from '../screens/Auth/ForgotPasswordScreen';
-import { LoginWithCodeScreen } from '../screens/Auth/LoginWithCodeScreen';
-import { HomeScreen } from '../screens/Home/HomeScreen';
+import {
+  LauncherScreen,
+  LoginScreen,
+  ForgotPasswordScreen,
+  LoginWithCodeScreen,
+} from '../screens/Auth';
+import { HomeScreen } from '../screens/Home';
 
 const Stack = createStackNavigator<RootStackParamList>();
 

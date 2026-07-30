@@ -1,9 +1,9 @@
 import React from 'react';
-import { Modal, StyleSheet } from 'react-native';
-import { AppView, AppText, AppActivityIndicator } from '../base';
+import { StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { useTheme } from '../../contexts/ThemeContext';
-import { screenUtils } from '../../utils/screenUtils';
 import { FONTS } from '../../utils/fontConstants';
+import { screenUtils } from '../../utils/screenUtils';
+import { AppActivityIndicator, AppModal, AppText, AppView } from '../base';
 
 /**
  * AppLoader Component Props
@@ -20,6 +20,8 @@ export interface AppLoaderProps {
  *
  * Reusable full-screen overlay component featuring an ActivityIndicator
  * spinner and custom status message for global asynchronous operations.
+ * Captures and blocks all touches so the background screen is disabled for click.
+ * Uses AppModal with noContainerStyle so it retains its custom compact design and fade animation.
  */
 export const AppLoader: React.FC<AppLoaderProps> = ({ visible, message }) => {
   const { colors } = useTheme();
@@ -27,30 +29,34 @@ export const AppLoader: React.FC<AppLoaderProps> = ({ visible, message }) => {
   if (!visible) return null;
 
   return (
-    <Modal transparent animationType="fade" visible={visible} statusBarTranslucent>
-      <AppView style={styles.overlay}>
-        <AppView
-          style={[
-            styles.container,
-            {
-              backgroundColor: colors.card,
-              borderColor: colors.border,
-            },
-          ]}
-        >
-          <AppActivityIndicator size="large" color={colors.primary} />
-          {Boolean(message) && (
-            <AppText
-              style={styles.messageText}
-              color={colors.foreground}
-              align="center"
+    <AppModal transparent animationType="fade" visible={visible} statusBarTranslucent noContainerStyle>
+      <TouchableWithoutFeedback onPress={() => {}}>
+        <AppView style={styles.overlay} pointerEvents="auto">
+          <TouchableWithoutFeedback onPress={(e) => e.stopPropagation?.()}>
+            <AppView
+              style={[
+                styles.container,
+                {
+                  backgroundColor: colors.card,
+                  borderColor: colors.border,
+                },
+              ]}
             >
-              {message}
-            </AppText>
-          )}
+              <AppActivityIndicator size="large" color={colors.primary} />
+              {Boolean(message) && (
+                <AppText
+                  style={styles.messageText}
+                  color={colors.foreground}
+                  align="center"
+                >
+                  {message}
+                </AppText>
+              )}
+            </AppView>
+          </TouchableWithoutFeedback>
         </AppView>
-      </AppView>
-    </Modal>
+      </TouchableWithoutFeedback>
+    </AppModal>
   );
 };
 
