@@ -1,15 +1,15 @@
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Animated, View } from 'react-native';
+import { Animated, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { StackScreenProps } from '@react-navigation/stack';
-import { RootStackParamList } from '../../navigation/types';
-import { useTheme } from '../../contexts/ThemeContext';
-import { screenUtils } from '../../utils/screenUtils';
-import { FONTS } from '../../utils/fontConstants';
-import { useAppDispatch } from '../../store';
-import { setCredentials } from '../../store/slices/authSlice';
-import { StorageService } from '../../services/storageService';
-import { UserAuthData } from '../../store/api/authApi';
+import { RootStackParamList } from '../../../navigation/types';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { screenUtils } from '../../../utils/screenUtils';
+import { useAppDispatch } from '../../../store';
+import { setCredentials } from '../../../store/slices/authSlice';
+import { StorageService } from '../../../services/storageService';
+import { UserAuthData } from '../../../store/api/authApi';
+import { styles } from './LauncherScreen.styles';
 
 type Props = StackScreenProps<RootStackParamList, 'Launcher'>;
 
@@ -124,7 +124,7 @@ export const LauncherScreen: React.FC<Props> = ({ navigation }) => {
         <Animated.Text
           style={[styles.tagline, { color: colors.textMuted, opacity: taglineOpacity }]}
         >
-          AUTH & LOGIN SAMPLE
+          {t('auth.tagline')}
         </Animated.Text>
       </View>
 
@@ -137,59 +137,3 @@ export const LauncherScreen: React.FC<Props> = ({ navigation }) => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  centerBlock: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    paddingHorizontal: screenUtils.scaleWidth(32),
-    width: '100%',
-  },
-  accentBar: {
-    height: screenUtils.scaleSize(4),
-    borderRadius: 9999,
-    marginBottom: screenUtils.scaleHeight(28),
-  },
-  logoContainer: {
-    marginBottom: screenUtils.scaleHeight(10),
-  },
-  climbText: {
-    fontFamily: FONTS.GEIST_BOLD,
-    fontSize: screenUtils.scaleFont(48),
-    fontWeight: '400',
-    letterSpacing: -1.5,
-  },
-  wordmarkRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  wordmarkText: {
-    fontFamily: FONTS.GEIST_BOLD,
-    fontSize: screenUtils.scaleFont(48),
-    fontWeight: '400',
-  },
-  tagline: {
-    fontFamily: FONTS.GEIST_MEDIUM,
-    fontSize: screenUtils.scaleFont(13),
-    fontWeight: '400',
-    letterSpacing: 1.5,
-    textTransform: 'uppercase',
-  },
-  footer: {
-    flexDirection: 'row',
-    gap: screenUtils.scaleSize(6),
-    paddingBottom: screenUtils.scaleHeight(40),
-    alignItems: 'center',
-  },
-  footerDot: {
-    width: screenUtils.scaleSize(6),
-    height: screenUtils.scaleSize(6),
-    borderRadius: 9999,
-  },
-});

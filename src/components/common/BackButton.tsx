@@ -16,6 +16,7 @@ export interface BackButtonProps {
   showText?: boolean;
   color?: string;
   style?: ViewStyle;
+  disabled?: boolean;
 }
 
 export const BackButton: React.FC<BackButtonProps> = ({
@@ -25,6 +26,7 @@ export const BackButton: React.FC<BackButtonProps> = ({
   showText = true,
   color,
   style,
+  disabled,
 }) => {
   const navigation = useNavigation<any>();
   const { colors } = useTheme();
@@ -34,6 +36,7 @@ export const BackButton: React.FC<BackButtonProps> = ({
   const resolvedText = title || (tx ? t(tx) : '');
 
   const handlePress = () => {
+    if (disabled) return;
     if (onPress) {
       onPress();
     } else {
@@ -44,7 +47,8 @@ export const BackButton: React.FC<BackButtonProps> = ({
   return (
     <AppTouchableOpacity
       activeOpacity={0.7}
-      style={[styles.backButton, style]}
+      disabled={disabled}
+      style={[styles.backButton, style, disabled && { opacity: 0.5 }]}
       onPress={handlePress}
     >
       <ArrowLeftIcon
