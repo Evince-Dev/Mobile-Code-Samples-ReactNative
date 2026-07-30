@@ -11,6 +11,7 @@ import { CloseIcon } from '../components/icons';
 import { useTheme } from './ThemeContext';
 import { screenUtils } from '../utils/screenUtils';
 import { FONT_WEIGHTS } from '../utils/fontConstants';
+import { AlertService } from '../services/alertService';
 
 export type AlertType = 'error' | 'success' | 'info' | 'warning';
 
@@ -201,7 +202,7 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
     setVisible(false);
     timeoutRef.current = setTimeout(() => {
       setAlertConfig(null);
-    }, 250);
+    }, 300);
   }, []);
 
   const showSnackbar = useCallback((config: SnackbarConfig) => {
@@ -210,6 +211,11 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       visible: true,
     });
   }, []);
+
+  useEffect(() => {
+    AlertService.registerAlertListener(showAlert);
+    AlertService.registerSnackbarListener(showSnackbar);
+  }, [showAlert, showSnackbar]);
 
   const handleCancel = useCallback(() => {
     if (alertConfig?.onCancel) {
@@ -301,7 +307,7 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 
       {/* Global Alert Modal utilizing AppModal */}
       {alertConfig && (
-        <AppModal visible={visible} onClose={handleClose}>
+        <AppModal visible={visible} onClose={handleClose} useSpringScale>
           <AppView style={styles.modalContent}>
             {/* Badge Icon */}
             <AppView

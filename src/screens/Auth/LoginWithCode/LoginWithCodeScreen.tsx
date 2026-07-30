@@ -1,12 +1,10 @@
 import React, { useRef, useState } from 'react';
-import { StyleSheet } from 'react-native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { useForm, Controller } from 'react-hook-form';
-import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 
-import { RootStackParamList } from '../../navigation/types';
+import { RootStackParamList } from '../../../navigation/types';
 import {
   BaseContainer,
   AppText,
@@ -14,7 +12,7 @@ import {
   AppView,
   AppTouchableOpacity,
   AppHeadingBlock,
-} from '../../components/base';
+} from '../../../components/base';
 import {
   FormInputField,
   AuthTopBar,
@@ -22,25 +20,16 @@ import {
   OTPInput,
   OTPInputRef,
   BackButton,
-} from '../../components/common';
-import { useTheme } from '../../contexts/ThemeContext';
-import { screenUtils } from '../../utils/screenUtils';
-import { FONTS } from '../../utils/fontConstants';
-import { MailIcon } from '../../components/icons';
-import { useAppDispatch } from '../../store';
-import { setCredentials } from '../../store/slices/authSlice';
-import { StorageService } from '../../services/storageService';
+} from '../../../components/common';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { screenUtils } from '../../../utils/screenUtils';
+import { MailIcon } from '../../../components/icons';
+import { useAppDispatch } from '../../../store';
+import { setCredentials } from '../../../store/slices/authSlice';
+import { StorageService, AuthValidationService, CodeFormValues } from '../../../services';
+import { styles } from './LoginWithCodeScreen.styles';
 
 type Props = StackScreenProps<RootStackParamList, 'LoginWithCode'>;
-
-const codeFormSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'auth.emailRequired' })
-    .email({ message: 'auth.invalidEmail' }),
-});
-
-type CodeFormValues = z.infer<typeof codeFormSchema>;
 
 export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
   const { colors } = useTheme();
@@ -60,12 +49,14 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
   } = useForm<CodeFormValues>({
-    resolver: zodResolver(codeFormSchema),
+    resolver: zodResolver(AuthValidationService.codeFormSchema),
     mode: 'onChange',
     defaultValues: {
       email: '',
     },
   });
+
+  const isAnyLoading = isSubmitting || isVerifying;
 
   const onSendCode = async (data: CodeFormValues) => {
     setSubmittedEmail(data.email);
@@ -110,6 +101,7 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
     <BaseContainer
       scrollable
       avoidKeyboard
+      loading={isAnyLoading}
       safeAreaViewStyle={{ backgroundColor: colors.background }}
       horizontalPadding={screenUtils.scaleWidth(24)}
       verticalPadding={screenUtils.scaleHeight(16)}
@@ -119,6 +111,7 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
 
       {/* ── Back Button ── */}
       <BackButton
+        disabled={isAnyLoading}
         onPress={() => {
           if (isCodeSent) {
             setIsCodeSent(false);
@@ -160,6 +153,7 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
                   placeholderTx="auth.emailPlaceholder"
                   keyboardType="email-address"
                   returnKeyType="done"
+                  editable={!isAnyLoading}
                   onSubmitEditing={handleSubmit(onSendCode)}
                   value={value}
                   onChangeText={onChange}
@@ -175,7 +169,7 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
             size="lg"
             tx="auth.sendCode"
             onPress={handleSubmit(onSendCode)}
-            disabled={!isValid}
+            disabled={!isValid || isAnyLoading}
             loading={isSubmitting}
             style={styles.actionBtn}
           />
@@ -223,7 +217,7 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
             size="lg"
             tx="auth.verifyCode"
             onPress={onVerifyCode}
-            disabled={otpCode.length < 6}
+            disabled={otpCode.length < 6 || isAnyLoading}
             loading={isVerifying}
             style={styles.actionBtn}
           />
@@ -231,6 +225,7 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
           {/* ── Resend Code Link ── */}
           <AppTouchableOpacity
             activeOpacity={0.7}
+            disabled={isAnyLoading}
             style={styles.resendBtn}
             onPress={handleResendCode}
           >
@@ -246,78 +241,3 @@ export const LoginWithCodeScreen: React.FC<Props> = ({ navigation }) => {
     </BaseContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: screenUtils.scaleWidth(6),
-    marginBottom: screenUtils.scaleHeight(36),
-    paddingVertical: 4,
-  },
-  backText: {
-    fontFamily: FONTS.GEIST_REGULAR,
-    fontSize: screenUtils.scaleFont(14),
-  },
-
-  contentBlock: {
-    width: '100%',
-  },
-  boxStyle: {
-    marginHorizontal: screenUtils.scaleWidth(6)
-  },
-  mailIconContainer: {
-    width: screenUtils.scaleSize(48),
-    height: screenUtils.scaleSize(48),
-    borderRadius: screenUtils.scaleSize(16),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: screenUtils.scaleHeight(16),
-  },
-
-  headingBlock: {
-    marginBottom: screenUtils.scaleHeight(24),
-  },
-  heading: {
-    fontFamily: FONTS.GEIST_SEMI_BOLD,
-    fontSize: screenUtils.scaleFont(24),
-    marginBottom: screenUtils.scaleHeight(6),
-  },
-  subheading: {
-    fontFamily: FONTS.GEIST_REGULAR,
-    fontSize: screenUtils.scaleFont(14),
-    lineHeight: screenUtils.scaleFont(14) * 1.4,
-  },
-  emailText: {
-    fontFamily: FONTS.GEIST_MEDIUM,
-  },
-
-  form: {
-    marginBottom: screenUtils.scaleHeight(8),
-  },
-
-  otpWrapper: {
-    marginBottom: screenUtils.scaleHeight(24),
-  },
-  errorText: {
-    fontFamily: FONTS.GEIST_REGULAR,
-    fontSize: screenUtils.scaleFont(13),
-    textAlign: 'center',
-    marginTop: screenUtils.scaleHeight(12),
-  },
-
-  actionBtn: {
-    marginTop: screenUtils.scaleHeight(8),
-  },
-
-  resendBtn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: screenUtils.scaleHeight(16),
-    marginTop: screenUtils.scaleHeight(8),
-  },
-  resendText: {
-    fontFamily: FONTS.GEIST_REGULAR,
-    fontSize: screenUtils.scaleFont(14),
-  },
-});

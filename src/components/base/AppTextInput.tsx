@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { TextInput, TextInputProps, StyleSheet, View, ViewStyle, StyleProp, TextStyle, Platform } from 'react-native';
+import { TextInput, TextInputProps, StyleSheet, View, ViewStyle, StyleProp, TextStyle, Platform, Pressable } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../contexts/ThemeContext';
@@ -86,8 +86,13 @@ export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
       if (onBlur) onBlur(e);
     };
 
+    const handleWrapperPress = () => {
+      localRef.current?.focus();
+    };
+
     const inputComponent = (
-      <View
+      <Pressable
+        onPress={handleWrapperPress}
         style={[
           styles.inputWrapper,
           {
@@ -138,7 +143,7 @@ export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
             routeName={routeName}
           />
         )}
-      </View>
+      </Pressable>
     );
 
     if (!resolvedLabel && !resolvedError && !containerStyle) {
@@ -196,6 +201,7 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
+    height: '100%',
     fontFamily: typography.fonts.GEIST_REGULAR,
     fontSize: 16,
     paddingVertical: 0,

@@ -2,6 +2,56 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased] - 2026-07-30
+
+### 📱 Screen Modularization & Directory Architecture
+- **Isolated Screen Directories & Styles**:
+  - Re-architected all Auth and Home screens into isolated directories with co-located `.styles.ts` files and module `index.ts` files:
+    - `src/screens/Auth/Login/` (`LoginScreen.tsx`, `LoginScreen.styles.ts`, `index.ts`)
+    - `src/screens/Auth/Launcher/` (`LauncherScreen.tsx`, `LauncherScreen.styles.ts`, `index.ts`)
+    - `src/screens/Auth/ForgotPassword/` (`ForgotPasswordScreen.tsx`, `ForgotPasswordScreen.styles.ts`, `index.ts`)
+    - `src/screens/Auth/LoginWithCode/` (`LoginWithCodeScreen.tsx`, `LoginWithCodeScreen.styles.ts`, `index.ts`)
+    - `src/screens/Home/HomeScreen/` (`HomeScreen.tsx`, `HomeScreen.styles.ts`, `index.ts`)
+- **Metro Resolution Fix**:
+  - Updated index re-exports in `src/screens/Auth/index.ts` and `src/screens/Home/index.ts` to use explicit sub-file paths (`export * from './HomeScreen/HomeScreen'`) to eliminate circular module resolution errors in Metro bundler.
+- **Legacy File Cleanup**:
+  - Safely migrated and updated screen references across `RootNavigator.tsx`.
+
+### 🛡 Validation & Form Management
+- **Centralized Validation Service (`validationService.ts`)**:
+  - Created `AuthValidationService` class to centralize all Zod schemas (`loginSchema`, `codeFormSchema`, `forgotPasswordSchema`).
+  - Exported strongly typed form value definitions (`LoginFormValues`, `CodeFormValues`, `ForgotPasswordFormValues`).
+  - Connected `AuthValidationService` schemas across `LoginScreen.tsx`, `LoginWithCodeScreen.tsx`, and `ForgotPasswordScreen.tsx`.
+
+### 🖱 Input Clickability & Focus Improvements
+- **Full Input Area Clickability (`AppTextInput.tsx`)**:
+  - Wrapped `inputWrapper` container in a `Pressable` that triggers `localRef.current?.focus()`.
+  - Added `height: '100%'` to `styles.input` so tapping anywhere inside padding, margins, or icons immediately focuses the input and opens the keyboard.
+
+### 🔒 Dynamic Loading & Touch-Prevention
+- **Dynamic BaseContainer Loader (`BaseContainer.tsx` & `AppLoader.tsx`)**:
+  - Added `loading?: boolean` prop to `BaseContainer.tsx`.
+  - Connected `BaseContainer` to Redux `isGoogleLoading` to dynamically render `<AppLoader visible={shouldShowModal} message={activeMessage} />`.
+  - Automatically sets `pointerEvents="none"` on screen content during active loading, completely disabling screen touches while loading.
+- **BackButton Prop Extension (`BackButton.tsx`)**:
+  - Added `disabled?: boolean` prop support to `BackButton.tsx` for disabling back navigation during global loading states.
+
+### 🎭 Modal & Center Spring Animations
+- **Center Spring-Scale Animations (`AppModal.tsx` & `AlertContext.tsx`)**:
+  - Extended `AppModal.tsx` with `useSpringScale` and `noContainerStyle` props.
+  - Implemented center spring-scale zoom-in (`scale 0 → 1` with `Animated.spring`) and fade-in/fade-out transitions for Alert Popups (`AlertContext.tsx`), matching `/Users/Evince/Mobile-WurkNow-ReactNative/src/components/CommonModal.tsx`.
+  - Fixed prop order in `AppModal.tsx` to enforce `animationType="none"`, preventing native bottom-slide animations from conflicting with center zoom transitions.
+
+### 🚀 Navigation & API Flow Fixes
+- **Navigation Ref Attachment (`App.tsx`)**:
+  - Re-connected `ref={navigationRef}` to `<NavigationContainer ref={navigationRef}>` in `App.tsx`, resolving `navigationRef.isReady() = false` issues during programmatic navigation.
+- **Navigation Service Fallbacks (`navigationService.ts`)**:
+  - Added robust `replace` and `reset` fallback mechanisms in `NavigationService.ts`.
+- **Sequential Modal & Navigation Teardown (`authApi.ts`)**:
+  - Coordinated `dispatch(setGoogleLoading(false))` with delayed `NavigationService.replace('App')` (150ms) on login success and `AlertService.showAlert` (350ms) on API failure, eliminating UIViewController thread locks on iOS/Android.
+
+---
+
 ## [Unreleased] - 2026-07-29
 
 ### 🔐 Authentication & Session Persistence

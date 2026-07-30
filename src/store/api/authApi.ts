@@ -1,8 +1,8 @@
 import { baseApi } from './baseApi';
 import { API_ENDPOINTS } from '../../constants/apiEndpoints';
-import { StorageService } from '../../services/storageService';
-import { setCredentials } from '../slices/authSlice';
-
+import { StorageService, AlertService, NavigationService } from '../../services';
+import { setCredentials, setGoogleLoading } from '../slices/authSlice';
+import i18n from '../../utils/i18n';
 
 /**
  * Authentication API Types
@@ -49,6 +49,7 @@ export const authApi = baseApi.injectEndpoints({
         method: 'POST',
         body: credentials,
       }),
+      extraOptions: { showError: false },
       invalidatesTags: ['Auth'],
       async onQueryStarted(_credentials, { dispatch, queryFulfilled }) {
         try {
@@ -60,8 +61,33 @@ export const authApi = baseApi.injectEndpoints({
             StorageService.setObject('auth_user', data.user);
             dispatch(setCredentials({ user: data.user }));
           }
-        } catch (error) {
+          // Hide loader modal
+          dispatch(setGoogleLoading(false));
+          // Replace stack to App screen
+          setTimeout(() => {
+            NavigationService.replace('App');
+          }, 150);
+        } catch (error: any) {
           console.log('[authApi] Login query error:', error);
+          // Hide loader modal
+          dispatch(setGoogleLoading(false));
+
+          const errorData = error?.error?.data || error?.data;
+          const apiErrorMessage =
+            errorData?.message ||
+            errorData?.error ||
+            error?.error?.message ||
+            error?.message ||
+            i18n.t('auth.invalidCredentials');
+
+          // Display Alert popup modal after progress loader unmounts completely
+          setTimeout(() => {
+            AlertService.showAlert({
+              title: i18n.t('common.error'),
+              message: apiErrorMessage,
+              type: 'error',
+            });
+          }, 350);
         }
       },
     }),

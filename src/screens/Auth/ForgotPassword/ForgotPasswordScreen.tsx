@@ -1,38 +1,25 @@
-import { zodResolver } from '@hookform/resolvers/zod';
-import { StackScreenProps } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { StackScreenProps } from '@react-navigation/stack';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet } from 'react-native';
-import { z } from 'zod';
 
 import {
   AppButton,
   AppHeadingBlock,
   AppText,
   AppView,
-  BaseContainer
-} from '../../components/base';
-import { AuthFooter, AuthTopBar, BackButton, FormInputField } from '../../components/common';
-import {
-  LockIcon,
-  MailIcon
-} from '../../components/icons';
-import { useTheme } from '../../contexts/ThemeContext';
-import { RootStackParamList } from '../../navigation/types';
-import { FONTS } from '../../utils/fontConstants';
-import { screenUtils } from '../../utils/screenUtils';
+  BaseContainer,
+} from '../../../components/base';
+import { AuthFooter, AuthTopBar, BackButton, FormInputField } from '../../../components/common';
+import { LockIcon, MailIcon } from '../../../components/icons';
+import { useTheme } from '../../../contexts/ThemeContext';
+import { RootStackParamList } from '../../../navigation/types';
+import { screenUtils } from '../../../utils/screenUtils';
+import { AuthValidationService, ForgotPasswordFormValues } from '../../../services';
+import { styles } from './ForgotPasswordScreen.styles';
 
 type Props = StackScreenProps<RootStackParamList, 'ForgotPassword'>;
-
-const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .min(1, { message: 'auth.emailRequired' })
-    .email({ message: 'auth.invalidEmail' }),
-});
-
-type ForgotPasswordFormValues = z.infer<typeof forgotPasswordSchema>;
 
 export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
   const { colors } = useTheme();
@@ -46,14 +33,12 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
   } = useForm<ForgotPasswordFormValues>({
-    resolver: zodResolver(forgotPasswordSchema),
+    resolver: zodResolver(AuthValidationService.forgotPasswordSchema),
     mode: 'onChange',
     defaultValues: {
       email: '',
     },
   });
-
-
 
   const onValidSubmit = async (data: ForgotPasswordFormValues) => {
     setSubmittedEmail(data.email);
@@ -65,6 +50,7 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
     <BaseContainer
       scrollable
       avoidKeyboard
+      loading={isSubmitting}
       safeAreaViewStyle={{ backgroundColor: colors.background }}
       horizontalPadding={screenUtils.scaleWidth(24)}
       verticalPadding={screenUtils.scaleHeight(16)}
@@ -100,6 +86,7 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
                   placeholderTx="auth.emailPlaceholder"
                   keyboardType="email-address"
                   returnKeyType="done"
+                  editable={!isSubmitting}
                   onSubmitEditing={handleSubmit(onValidSubmit)}
                   value={value}
                   onChangeText={onChange}
@@ -115,7 +102,7 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
             size="lg"
             tx="auth.sendResetLink"
             onPress={handleSubmit(onValidSubmit)}
-            disabled={!isValid}
+            disabled={!isValid || isSubmitting}
             loading={isSubmitting}
             style={styles.submitBtn}
           />
@@ -161,113 +148,3 @@ export const ForgotPasswordScreen: React.FC<Props> = ({ navigation }) => {
     </BaseContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  // Back button
-  backButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: screenUtils.scaleWidth(6),
-    marginBottom: screenUtils.scaleHeight(44),
-    paddingVertical: 4,
-  },
-  backText: {
-    fontFamily: FONTS.GEIST_REGULAR,
-    fontSize: screenUtils.scaleFont(14),
-  },
-
-  // Content Container
-  contentBlock: {
-    width: '100%',
-  },
-
-  // Lock Icon Box
-  lockIconContainer: {
-    width: screenUtils.scaleSize(48),
-    height: screenUtils.scaleSize(48),
-    borderRadius: screenUtils.scaleSize(16),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: screenUtils.scaleHeight(16),
-    marginTop: screenUtils.scaleHeight(16),
-  },
-
-  // Headings
-  headingBlock: {
-    marginBottom: screenUtils.scaleHeight(24),
-  },
-  heading: {
-    fontFamily: FONTS.GEIST_SEMI_BOLD,
-    fontSize: screenUtils.scaleFont(24),
-    marginBottom: screenUtils.scaleHeight(6),
-  },
-  subheading: {
-    fontFamily: FONTS.GEIST_REGULAR,
-    fontSize: screenUtils.scaleFont(14),
-    lineHeight: screenUtils.scaleFont(14) * 1.4,
-  },
-
-  // Form
-  form: {
-    marginBottom: screenUtils.scaleHeight(8),
-  },
-
-  // Submit Button
-  submitBtn: {
-    marginTop: screenUtils.scaleHeight(8),
-  },
-
-  // Sent State
-  sentContentBlock: {
-    width: '100%',
-    alignItems: 'center',
-  },
-  mailIconContainer: {
-    width: screenUtils.scaleSize(64),
-    height: screenUtils.scaleSize(64),
-    borderRadius: screenUtils.scaleSize(32),
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginBottom: screenUtils.scaleHeight(20),
-    marginTop: screenUtils.scaleHeight(40),
-  },
-  sentHeaderBlock: {
-    alignItems: 'center',
-    marginBottom: screenUtils.scaleHeight(24),
-  },
-  sentHeading: {
-    fontFamily: FONTS.GEIST_SEMI_BOLD,
-    fontSize: screenUtils.scaleFont(24),
-    textAlign: 'center',
-    marginBottom: screenUtils.scaleHeight(8),
-  },
-  sentSubheading: {
-    fontFamily: FONTS.GEIST_REGULAR,
-    fontSize: screenUtils.scaleFont(14),
-    textAlign: 'center',
-    lineHeight: screenUtils.scaleFont(14) * 1.5,
-  },
-  sentEmailText: {
-    fontFamily: FONTS.GEIST_MEDIUM,
-    fontSize: screenUtils.scaleFont(14),
-  },
-
-  // Callout
-  calloutCard: {
-    width: '100%',
-    borderRadius: screenUtils.scaleSize(14),
-    padding: screenUtils.scaleSize(16),
-    marginBottom: screenUtils.scaleHeight(24),
-    marginTop: screenUtils.scaleHeight(24),
-  },
-  calloutText: {
-    fontFamily: FONTS.GEIST_REGULAR,
-    fontSize: screenUtils.scaleFont(13),
-    textAlign: 'center',
-    lineHeight: screenUtils.scaleFont(13) * 1.5,
-  },
-  tryAgainText: {
-    fontFamily: FONTS.GEIST_MEDIUM,
-    fontSize: screenUtils.scaleFont(13),
-  },
-});

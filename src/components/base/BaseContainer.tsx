@@ -8,10 +8,13 @@ import {
   Platform,
 } from 'react-native';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useTranslation } from 'react-i18next';
 import { useTheme } from '../../contexts/ThemeContext';
 import { AppSafeAreaView } from './AppSafeAreaView';
 import { AppScrollView } from './AppScrollView';
 import { AppView } from './AppView';
+import { AppLoader } from '../common/AppLoader';
+import { useAppSelector } from '../../store';
 
 export interface BaseContainerProps {
   /** Optional header element rendered fixed at top outside scroll area */
@@ -43,6 +46,18 @@ export interface BaseContainerProps {
   edges?: Array<'top' | 'right' | 'bottom' | 'left'>;
   /** When false, the background color of the screen is transparent. Defaults to true. */
   useThemeBackground?: boolean;
+  /**
+   * Dynamic loading state. When true, automatically disables all screen touch
+   * interactions (pointerEvents='none') and optionally renders the AppLoader modal.
+   */
+  loading?: boolean;
+  /** Optional status message displayed inside the AppLoader modal when active */
+  loadingMessage?: string;
+  /**
+   * When true (or when Google login loading is active in Redux), renders full-screen AppLoader modal.
+   * Defaults to true if loading is active.
+   */
+  showLoaderModal?: boolean;
 }
 
 /**
@@ -51,6 +66,8 @@ export interface BaseContainerProps {
  * A composable screen wrapper used in every screen.
  * Provides:
  * - SafeArea insets handling (via AppSafeAreaView)
+ * - Dynamic touch prevention & pointerEvents handling during async loading
+ * - Dynamic AppLoader overlay rendering for global/screen loading
  * - Optional header rendering at top
  * - Optional scroll behaviour
  * - Optional KeyboardAvoidingView
@@ -69,8 +86,19 @@ export const BaseContainer: React.FC<BaseContainerProps> = ({
   verticalPadding = 0,
   edges = ['top'],
   useThemeBackground = true,
+  loading = false,
+  loadingMessage,
+  showLoaderModal,
 }) => {
   const { colors } = useTheme();
+  const { t } = useTranslation();
+
+  // Read Google Login loading state dynamically from Redux
+  const isGoogleLoading = useAppSelector((state) => state.auth?.isGoogleLoading || false);
+
+  const isEffectiveLoading = Boolean(loading || isGoogleLoading);
+  const shouldShowModal = isGoogleLoading || (loading && showLoaderModal === true);
+  const activeMessage = loadingMessage || (isGoogleLoading ? t('common.loggingIn') : undefined);
 
   const paddingStyle: ViewStyle = {
     paddingHorizontal: horizontalPadding,
@@ -111,7 +139,13 @@ export const BaseContainer: React.FC<BaseContainerProps> = ({
       edges={edges}
     >
       {header}
-      {wrappedContent}
+      <AppView
+        style={styles.fill}
+        pointerEvents={isEffectiveLoading ? 'none' : 'auto'}
+      >
+        {wrappedContent}
+      </AppView>
+      <AppLoader visible={shouldShowModal} message={activeMessage} />
     </AppSafeAreaView>
   );
 };
