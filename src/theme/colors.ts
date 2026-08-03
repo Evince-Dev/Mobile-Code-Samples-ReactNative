@@ -39,6 +39,8 @@ export interface ColorPalette {
   translucentHeaderBackground: string;
   success: string;
   categoryIconBadge: string;
+  shimmerBackground: string;
+  shimmerHighlight: string;
 }
 
 export const lightColors: ColorPalette = {
@@ -82,6 +84,8 @@ export const lightColors: ColorPalette = {
   translucentHeaderBackground: 'rgba(250, 250, 249, 0.94)',
   success: '#16A34A',
   categoryIconBadge: 'rgba(13, 45, 107, 0.1)',
+  shimmerBackground: '#E7E5E4',
+  shimmerHighlight: '#F5F5F4',
 };
 
 export const darkColors: ColorPalette = {
@@ -125,4 +129,6 @@ export const darkColors: ColorPalette = {
   translucentHeaderBackground: 'rgba(12, 10, 9, 0.95)',
   success: '#22C55E',
   categoryIconBadge: 'rgba(107, 143, 199, 0.15)',
+  shimmerBackground: '#292524',
+  shimmerHighlight: '#44403C',
 };

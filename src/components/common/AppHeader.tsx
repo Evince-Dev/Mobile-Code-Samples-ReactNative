@@ -1,5 +1,5 @@
-import React from 'react';
-import { StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
+import { StyleSheet, TouchableOpacity, Animated } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import { AppText } from '../base/AppText';
 import { AppView } from '../base/AppView';
@@ -16,6 +16,29 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
   const { colors, isDark, toggleTheme } = useTheme();
   const { t } = useTranslation();
   const displayTitle = title ?? t('common.appName');
+  const rotateAnim = useRef(new Animated.Value(0)).current;
+
+  const handleToggleTheme = () => {
+    Animated.spring(rotateAnim, {
+      toValue: 1,
+      tension: 100,
+      friction: 8,
+      useNativeDriver: true,
+    }).start(() => {
+      rotateAnim.setValue(0);
+    });
+    toggleTheme();
+  };
+
+  const spin = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '180deg'],
+  });
+
+  const scale = rotateAnim.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [1, 1.25, 1],
+  });
 
   return (
     <AppView
@@ -29,18 +52,20 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ title }) => {
         {displayTitle}
       </AppText>
 
-      {/* Right: Theme Toggle Button */}
+      {/* Right: Animated Theme Toggle Button */}
       <TouchableOpacity
-        onPress={toggleTheme}
+        onPress={handleToggleTheme}
         style={[styles.themeButton, { backgroundColor: colors.secondary }]}
         activeOpacity={0.7}
         accessibilityLabel="Toggle Theme"
       >
-        {isDark ? (
-          <SunIcon width={18} height={18} color={colors.primary} />
-        ) : (
-          <MoonIcon width={18} height={18} color={colors.primary} />
-        )}
+        <Animated.View style={{ transform: [{ rotate: spin }, { scale }] }}>
+          {isDark ? (
+            <SunIcon width={18} height={18} color={colors.primary} />
+          ) : (
+            <MoonIcon width={18} height={18} color={colors.primary} />
+          )}
+        </Animated.View>
       </TouchableOpacity>
     </AppView>
   );

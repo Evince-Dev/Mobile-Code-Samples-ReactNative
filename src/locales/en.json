@@ -82,6 +82,8 @@
     "sentTo": "Sent to",
     "verifyCode": "Verify code",
     "resendCode": "Resend code",
-    "codeMatchError": "That code didn't match. Please try again."
+    "resendCodeIn": "Resend code in {{time}}",
+    "codeMatchError": "That code didn't match. Please try again.",
+    "sessionExpired": "Session Expired"
   }
 }
