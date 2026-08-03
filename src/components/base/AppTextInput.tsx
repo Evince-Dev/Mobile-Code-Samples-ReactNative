@@ -91,51 +91,53 @@ export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
     };
 
     const inputComponent = (
-      <Pressable
-        onPress={handleWrapperPress}
-        style={[
-          styles.inputWrapper,
-          {
-            backgroundColor: colors.inputBackground,
-            borderColor: resolvedError
-              ? colors.destructive
-              : isFocused
-                ? colors.primary
-                : colors.border,
-            borderWidth: isFocused ? 2 : 1,
-          },
-          isMultiline && styles.multilineInputWrapper,
-          style,
-        ]}
-      >
-        {leftIcon ? (
-          <View style={[styles.leftIconContainer, isMultiline && { marginTop: 4 }]}>
-            {leftIcon}
-          </View>
-        ) : null}
-        <TextInput
-          ref={localRef}
-          inputAccessoryViewID={Platform.OS === 'ios' ? accessoryId : undefined}
+      <>
+        <Pressable
+          onPress={handleWrapperPress}
           style={[
-            styles.input,
+            styles.inputWrapper,
             {
-              color: colors.foreground,
+              backgroundColor: colors.inputBackground,
+              borderColor: resolvedError
+                ? colors.destructive
+                : isFocused
+                  ? colors.primary
+                  : colors.border,
+              borderWidth: isFocused ? 2 : 1,
             },
-            isMultiline && styles.multilineInput,
-            textInputStyle,
+            isMultiline && styles.multilineInputWrapper,
+            style,
           ]}
-          placeholder={resolvedPlaceholder}
-          placeholderTextColor={placeholderTextColor || colors.textMuted}
-          textAlignVertical={isMultiline ? 'top' : props.textAlignVertical}
-          onFocus={handleFocus}
-          onBlur={handleBlur}
-          {...props}
-        />
-        {rightIcon ? (
-          <View style={styles.rightIconContainer}>
-            {rightIcon}
-          </View>
-        ) : null}
+        >
+          {leftIcon ? (
+            <View style={[styles.leftIconContainer, isMultiline && { marginTop: 4 }]}>
+              {leftIcon}
+            </View>
+          ) : null}
+          <TextInput
+            ref={localRef}
+            inputAccessoryViewID={Platform.OS === 'ios' ? accessoryId : undefined}
+            style={[
+              styles.input,
+              {
+                color: colors.foreground,
+              },
+              isMultiline && styles.multilineInput,
+              textInputStyle,
+            ]}
+            placeholder={resolvedPlaceholder}
+            placeholderTextColor={placeholderTextColor || colors.textMuted}
+            textAlignVertical={isMultiline ? 'top' : props.textAlignVertical}
+            onFocus={handleFocus}
+            onBlur={handleBlur}
+            {...props}
+          />
+          {rightIcon ? (
+            <View style={styles.rightIconContainer}>
+              {rightIcon}
+            </View>
+          ) : null}
+        </Pressable>
         {Platform.OS === 'ios' && (
           <KeyboardAccessoryToolbar
             nativeID={accessoryId}
@@ -143,7 +145,7 @@ export const AppTextInput = React.forwardRef<TextInput, AppTextInputProps>(
             routeName={routeName}
           />
         )}
-      </Pressable>
+      </>
     );
 
     if (!resolvedLabel && !resolvedError && !containerStyle) {

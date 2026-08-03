@@ -14,6 +14,7 @@ import { AppSafeAreaView } from './AppSafeAreaView';
 import { AppScrollView } from './AppScrollView';
 import { AppView } from './AppView';
 import { AppLoader } from '../common/AppLoader';
+import { NetworkStatusBanner } from '../common/NetworkStatusBanner';
 import { useAppSelector } from '../../store';
 
 export interface BaseContainerProps {
@@ -58,6 +59,10 @@ export interface BaseContainerProps {
    * Defaults to true if loading is active.
    */
   showLoaderModal?: boolean;
+  /**
+   * When true (default), renders real-time NetworkStatusBanner on top when offline or reconnected.
+   */
+  showNetworkBanner?: boolean;
 }
 
 /**
@@ -68,6 +73,7 @@ export interface BaseContainerProps {
  * - SafeArea insets handling (via AppSafeAreaView)
  * - Dynamic touch prevention & pointerEvents handling during async loading
  * - Dynamic AppLoader overlay rendering for global/screen loading
+ * - Real-time NetworkStatusBanner notifications
  * - Optional header rendering at top
  * - Optional scroll behaviour
  * - Optional KeyboardAvoidingView
@@ -89,6 +95,7 @@ export const BaseContainer: React.FC<BaseContainerProps> = ({
   loading = false,
   loadingMessage,
   showLoaderModal,
+  showNetworkBanner = true,
 }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -138,6 +145,7 @@ export const BaseContainer: React.FC<BaseContainerProps> = ({
       useThemeBackground={useThemeBackground}
       edges={edges}
     >
+      {showNetworkBanner && <NetworkStatusBanner />}
       {header}
       <AppView
         style={styles.fill}

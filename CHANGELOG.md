@@ -2,6 +2,41 @@
 
 All notable changes to this project are documented in this file.
 
+## [Unreleased] - 2026-08-03
+
+### 🌐 Network Status Banner & Offline Monitoring
+- **Real-Time Network Status Banner (`NetworkStatusBanner.tsx`)**:
+  - Built an animated `NetworkStatusBanner` component that slides down from top (or bottom) to notify users during offline and connection restored events.
+  - Automatically auto-hides the "Connection restored" notification banner after 3.5 seconds.
+  - Resolved `NodeJS.Timeout` TypeScript namespace error using `ReturnType<typeof setTimeout>`.
+- **Network Connectivity Context (`NetworkContext.tsx`)**:
+  - Implemented `NetworkProvider` context tracking active `isConnected`, `wasOffline`, and `isChecking` states.
+  - Added lightweight HEAD network ping verification (`clients3.google.com/generate_204`) with configurable periodic polling (15s online / 4s offline).
+- **SVG Icon Exports (`WifiIcon.tsx` & `index.ts`)**:
+  - Added `WifiIcon.tsx` SVG component for connection restored indicator and exported it cleanly from `components/icons`.
+- **Global BaseContainer Integration (`BaseContainer.tsx`)**:
+  - Mounted `NetworkStatusBanner` inside `BaseContainer` with optional `showNetworkBanner?: boolean` prop for automatic screen-wide offline banner alerts.
+
+### ⚡ Dashboard Skeleton Shimmer View
+- **Animated Shimmer Skeleton Loader (`HomeScreenShimmer.tsx` & `HomeScreen.tsx`)**:
+  - Created `HomeScreenShimmer.tsx` skeleton view component using looping spring-opacity animations (`0.35` ↔ `0.85`) matching the `HomeScreen` UI layout.
+  - Integrated 1-second initial shimmer loading state in `HomeScreen.tsx` before rendering active dashboard card elements.
+  - Re-exported `HomeScreenShimmer` cleanly from `screens/Home/HomeScreen/index.ts`.
+
+### 🎨 Theme & App Header Animations
+- **Extended Theme Palette (`colors.ts` & `ThemeContext.tsx`)**:
+  - Added `shimmerBackground` and `shimmerHighlight` color properties to `ColorPalette`, `lightColors`, and `darkColors`.
+- **Animated Sun/Moon Theme Toggle (`AppHeader.tsx`)**:
+  - Added spring scaling and 180° rotation animations on sun/moon icon toggle in `AppHeader.tsx` when switching light/dark theme modes.
+
+### 🔑 Auth & OTP Timer Bug Fixes
+- **OTP Countdown Timer Restart Fix (`LoginWithCodeScreen.tsx`)**:
+  - Resolved `Cannot find namespace 'NodeJS'` TypeScript error by replacing `NodeJS.Timeout` type annotation with `ReturnType<typeof setInterval>`.
+  - Fixed countdown timer restart failure after resending code by adding `canResend` to `useEffect` dependencies (`[isCodeSent, canResend]`), allowing "Resend Code" to re-initialize a fresh 60-second interval.
+
+### 🌐 Localization & i18n (`en.json`)
+- Added translation keys for `noInternetTitle`, `noInternetMessage`, `retry`, and `connectionRestored`.
+
 ## [Unreleased] - 2026-07-30
 
 ### 📱 Screen Modularization & Directory Architecture

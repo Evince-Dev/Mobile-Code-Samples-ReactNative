@@ -21,8 +21,13 @@ import { StorageService } from '../../../services/storageService';
 import { screenUtils } from '../../../utils/screenUtils';
 import { SESSION_TIMEOUT_MS } from '../../../utils/Constants';
 import { styles } from './HomeScreen.styles';
+import { HomeScreenShimmer } from './HomeScreenShimmer';
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'App'>;
+
+export interface HomeScreenProps {
+  isLoading?: boolean;
+}
 
 /**
  * HomeScreen Component
@@ -31,15 +36,27 @@ type NavigationProp = StackNavigationProp<RootStackParamList, 'App'>;
  * Handles active user session details, 5-minute session timeout management,
  * and secure logout execution with loading indicators and alert dialogs.
  */
-export const HomeScreen: React.FC = () => {
+export const HomeScreen: React.FC<HomeScreenProps> = ({ isLoading: propIsLoading }) => {
   const navigation = useNavigation<NavigationProp>();
   const { colors } = useTheme();
   const { t } = useTranslation();
   const dispatch = useAppDispatch();
   const { showAlert } = useAlert();
   const [isLogoutLoading, setIsLogoutLoading] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(propIsLoading ?? true);
   const user = useAppSelector((state) => state.auth.user);
   const [logoutMutation] = useLogoutMutation();
+
+  React.useEffect(() => {
+    if (propIsLoading === undefined) {
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+      return () => clearTimeout(timer);
+    } else {
+      setIsLoading(propIsLoading);
+    }
+  }, [propIsLoading]);
 
   const displayName = user?.name || '';
   const email = user?.email || '';
@@ -48,7 +65,7 @@ export const HomeScreen: React.FC = () => {
    * Executes the API logout request, clears secure storage tokens,
    * resets client authentication Redux state, and navigates back to the Login screen.
    */
-  const performLogout = async () => {
+  const performLogout = React.useCallback(async () => {
     setIsLogoutLoading(true);
     try {
       await logoutMutation().unwrap();
@@ -60,7 +77,7 @@ export const HomeScreen: React.FC = () => {
       dispatch(logout());
       navigation.replace('Login');
     }
-  };
+  }, [dispatch, logoutMutation, navigation]);
 
   /**
    * Triggers the user-initiated logout confirmation dialog using AlertContext.
@@ -94,7 +111,11 @@ export const HomeScreen: React.FC = () => {
     }, SESSION_TIMEOUT_MS);
 
     return () => clearTimeout(sessionTimer);
-  }, []);
+  }, [showAlert, t, performLogout]);
+
+  if (isLoading) {
+    return <HomeScreenShimmer />;
+  }
 
   return (
     <BaseContainer

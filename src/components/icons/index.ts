@@ -39,4 +39,5 @@ export * from './CalendarIcon';
 export * from './PlusIcon';
 export * from './CheckIcon';
 export * from './WifiOffIcon';
+export * from './WifiIcon';
 

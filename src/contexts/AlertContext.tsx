@@ -21,6 +21,7 @@ export interface AlertConfig {
   message: string;
   messageTx?: string;
   type?: AlertType;
+  showTwoButtons?: boolean;
   confirmText?: string;
   confirmTx?: string;
   cancelText?: string;
@@ -299,7 +300,12 @@ export const AlertProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       : alertConfig.cancelText || 'Cancel'
     : 'Cancel';
 
-  const hasCancel = Boolean(alertConfig?.cancelText || alertConfig?.cancelTx || alertConfig?.onCancel);
+  const hasCancel = Boolean(
+    alertConfig?.showTwoButtons ||
+      alertConfig?.cancelText ||
+      alertConfig?.cancelTx ||
+      alertConfig?.onCancel,
+  );
 
   return (
     <AlertContext.Provider value={{ showAlert, hideAlert, showSnackbar }}>
